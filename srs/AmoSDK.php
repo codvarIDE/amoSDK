@@ -7,7 +7,7 @@ class AmoSDK {
     private $data;
     private $timeout = 30;
     private $cache_enabled = false;
-    private $cache_duration = 3600; // 1 hour
+    private $cache_duration = 3600; 
     private $cache_dir = 'cache/';
     private $log_enabled = false;
     private $log_file = 'logs/api_logs.txt';
@@ -107,7 +107,7 @@ class AmoSDK {
         try {
             $this->validateRequest();
             
-            // Check cache first
+          
             $cached_response = $this->getFromCache();
             if ($cached_response !== null) {
                 return $cached_response;
