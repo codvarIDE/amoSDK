@@ -37,55 +37,80 @@ _Composer support coming soon!_
 
 ## 🚀 Basic Usage
 
-### 🔹 Simple GET Request
+### 🔹 Simple Request
 
 
 
 ```php
 require_once 'AmoSDK.php';
 
-$response = AmoSDK::get('https://api.example.com/data')
-    ->enableCache(3600)           // optional: enable 1 hour caching
-    ->enableLogging()             // optional: enable logging to logs/api_logs.txt
-    ->setTimeout(10)              // optional: set timeout to 10 seconds
-    ->setRetry(3, 2)              // optional: retry 3 times with 2s delay
+<?php
+// 1. Simple GET Request
+$response = AmoSDK::get('https://api.example.com/users')
     ->pull();
+print_r($response);
 
+// 2. GET Request with Headers
+$headers = ['Authorization: Bearer your_token'];
+$response = AmoSDK::get('https://api.example.com/protected-data', $headers)
+    ->pull();
+print_r($response);
+
+// 3. POST Request with Data
+$data = [
+    'username' => 'john_doe',
+    'email' => 'john@example.com'
+];
+$response = AmoSDK::post('https://api.example.com/users', $data)
+    ->pull();
+print_r($response);
+
+// 4. PUT Request for Updating
+$update_data = ['status' => 'active'];
+$response = AmoSDK::put('https://api.example.com/users/123', $update_data)
+    ->pull();
+print_r($response);
+
+
+// 5. DELETE Request
+$response = AmoSDK::delete('https://api.example.com/users/123')
+    ->pull();
 print_r($response);
 ```
 
 ---
 
-### 🔹 POST Request with Data
+
+---
+
+## ⚙️ Advanced Usage with Features
+
+
 
 ```php
-$data = [
-    'name' => 'Jane Doe',
-    'email' => 'jane@example.com'
-];
+<?php
+// 1. Using Caching
+$response = AmoSDK::get('https://api.example.com/data')
+    ->enableCache(1800) // Cache for 30 minutes
+    ->pull();
 
-$headers = [
-    'Authorization: Bearer YOUR_API_TOKEN'
-];
-
-$response = AmoSDK::post('https://api.example.com/users', $data, $headers)
+// 2. With Logging
+$response = AmoSDK::post('https://api.example.com/orders', $data)
     ->enableLogging()
     ->pull();
 
-print_r($response);
-```
+// 3. Custom Timeout and Retry
+$response = AmoSDK::get('https://api.example.com/large-data')
+    ->setTimeout(60)        // 60 seconds timeout
+    ->setRetry(5, 2)       // 5 attempts, 2 seconds delay
+    ->pull();
 
----
-
-## ⚙️ Advanced Usage
-
-### 🔸 PUT Request
-
-```php
-$data = ['status' => 'active'];
-
-$response = AmoSDK::put('https://api.example.com/user/123', $data)
-    ->setTimeout(20)
+// 4. Combining Multiple Features
+$response = AmoSDK::post('https://api.example.com/important-data', $data)
+    ->enableCache(3600)    // 1 hour cache
+    ->enableLogging()
+    ->setTimeout(30)
+    ->setRetry(3, 1)
     ->pull();
 ```
 
