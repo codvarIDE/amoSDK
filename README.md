@@ -1,4 +1,3 @@
-Say less 😎—here’s a full-on **Markdown README.md** doc you can drop straight into your GitHub repo for your SDK.
 
 ---
 
