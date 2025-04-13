@@ -21,7 +21,7 @@ AmoSDK is a lightweight, extensible PHP SDK that makes HTTP requests dead simple
 Just clone the repo or copy `AmoSDK.php` into your project:
 
 ```bash
-git clone https://github.com/yourusername/amosdk.git
+git clone https://github.com/codvarIDE/amosdk.git
 ```
 
 Or manually drop `AmoSDK.php` into your project and require it:
