@@ -1,141 +1,275 @@
 
+
 ---
 
-```markdown
-# 🧠 AmoSDK - PHP API Wrapper
+# 📦 amoSDK - PHP PDO Wrapper
 
-AmoSDK is a lightweight, extensible PHP SDK that makes HTTP requests dead simple. Built with dev-friendly features like method chaining, retry logic, caching, logging, and more.
+A simple and powerful PHP SDK built on top of PDO for easy interaction with MySQL databases.
 
-## ⚡ Features
+> Author: Claude  
+> Version: 1.0  
+> License: MIT  
 
-- 🔁 Retries with delay
-- 🕓 Timeout control
-- 📁 Caching (with TTL)
-- 📜 Logging (file-based)
-- 📦 Supports GET, POST, PUT, DELETE, PATCH
-- 🔗 Method chaining for clean code
-- ✅ Easy to extend or customize
+---
 
-## 📦 Installation
+## 📌 Features
 
-Just clone the repo or copy `AmoSDK.php` into your project:
+- Easy CRUD (Create, Read, Update, Delete) operations
+- Safe and secure prepared statements
+- Fluent interface for chaining
+- Supports transactions
+- Executes raw SQL queries
+- Counts records with conditions
 
-```bash
-git clone https://github.com/codvarIDE/amosdk.git
-```
+---
 
-Or manually drop `AmoSDK.php` into your project and require it:
+## 🚀 Getting Started
+
+### ✅ Requirements
+
+- PHP >= 7.1
+- MySQL
+- PDO extension enabled
+
+---
+
+## 🏗️ Initialization
 
 ```php
-require_once 'path/to/AmoSDK.php';
-```
+require_once 'amoSDK.php';
 
-_Composer support coming soon!_
+$db = new amoSDK('localhost', 'mydatabase', 'username', 'password');
+```
 
 ---
 
-## 🚀 Basic Usage
+## 🔧 Methods
 
-### 🔹 Simple Request
+### ➕ `table(string $tableName): self`
 
-
+Sets the active table for subsequent operations.
 
 ```php
-require_once 'AmoSDK.php';
-
-<?php
-// 1. Simple GET Request
-$response = AmoSDK::get('https://api.example.com/users')
-    ->pull();
-print_r($response);
-
-// 2. GET Request with Headers
-$headers = ['Authorization: Bearer your_token'];
-$response = AmoSDK::get('https://api.example.com/protected-data', $headers)
-    ->pull();
-print_r($response);
-
-// 3. POST Request with Data
-$data = [
-    'username' => 'john_doe',
-    'email' => 'john@example.com'
-];
-$response = AmoSDK::post('https://api.example.com/users', $data)
-    ->pull();
-print_r($response);
-
-// 4. PUT Request for Updating
-$update_data = ['status' => 'active'];
-$response = AmoSDK::put('https://api.example.com/users/123', $update_data)
-    ->pull();
-print_r($response);
-
-
-// 5. DELETE Request
-$response = AmoSDK::delete('https://api.example.com/users/123')
-    ->pull();
-print_r($response);
+$db->table('users');
 ```
 
 ---
 
+### 🆕 `create(array $data): int`
+
+Inserts a new record into the current table.
+
+#### Parameters:
+- `array $data`: Associative array of column names and values
+
+#### Returns:
+- `int`: ID of the inserted record
+
+#### Example:
+```php
+$userId = $db->table('users')->create([
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'created_at' => date('Y-m-d H:i:s')
+]);
+```
 
 ---
 
-## ⚙️ Advanced Usage with Features
+### 📖 `read(array $conditions = [], string $fields = '*', string $orderBy = '', int|null $limit = null): array`
 
+Fetches records from the current table.
 
+#### Parameters:
+- `array $conditions`: Key-value conditions
+- `string $fields`: Columns to select (default: `*`)
+- `string $orderBy`: SQL `ORDER BY` clause
+- `int|null $limit`: Max number of records
+
+#### Returns:
+- `array`: List of matched rows
+
+#### Example:
+```php
+$users = $db->table('users')->read(
+    ['status' => 'active'],
+    '*',
+    'created_at DESC',
+    10
+);
+```
+
+---
+
+### 🛠️ `update(array $data, array $conditions): bool`
+
+Updates records in the current table.
+
+#### Parameters:
+- `array $data`: Columns and values to update
+- `array $conditions`: Key-value conditions
+
+#### Returns:
+- `bool`: Success status
+
+#### Example:
+```php
+$db->table('users')->update(
+    ['status' => 'inactive'],
+    ['id' => 1]
+);
+```
+
+---
+
+### ❌ `delete(array $conditions): bool`
+
+Deletes records from the current table.
+
+#### Parameters:
+- `array $conditions`: Key-value conditions
+
+#### Returns:
+- `bool`: Success status
+
+#### Example:
+```php
+$db->table('users')->delete(['id' => 1]);
+```
+
+---
+
+### 📊 `count(array $conditions = []): int`
+
+Counts the number of records in the current table that match given conditions.
+
+#### Parameters:
+- `array $conditions`: Key-value conditions
+
+#### Returns:
+- `int`: Number of records
+
+#### Example:
+```php
+$activeCount = $db->table('users')->count(['status' => 'active']);
+```
+
+---
+
+### 🔍 `query(string $sql, array $params = []): array`
+
+Executes a raw SQL query with optional parameter binding.
+
+#### Parameters:
+- `string $sql`: Raw SQL query
+- `array $params`: Bound parameters for prepared statement
+
+#### Returns:
+- `array`: Query result set
+
+#### Example:
+```php
+$results = $db->query(
+    "SELECT * FROM users WHERE email LIKE ?",
+    ['%@example.com']
+);
+```
+
+---
+
+### 🧾 Transaction Support
+
+#### `beginTransaction(): bool`
+
+Starts a database transaction.
+
+#### `commit(): bool`
+
+Commits the current transaction.
+
+#### `rollback(): bool`
+
+Rolls back the current transaction.
+
+#### Example:
+```php
+$db->beginTransaction();
+try {
+    $db->table('users')->create(['name' => 'User 1']);
+    $db->table('users')->create(['name' => 'User 2']);
+    $db->commit();
+} catch (\Exception $e) {
+    $db->rollback();
+    throw $e;
+}
+```
+
+---
+
+## 🧪 Full Usage Example
 
 ```php
-<?php
-// 1. Using Caching
-$response = AmoSDK::get('https://api.example.com/data')
-    ->enableCache(1800) // Cache for 30 minutes
-    ->pull();
+try {
+    $db = new DatabaseSDK('localhost', 'mydatabase', 'user', 'pass');
 
-// 2. With Logging
-$response = AmoSDK::post('https://api.example.com/orders', $data)
-    ->enableLogging()
-    ->pull();
+    // Insert new record
+    $userId = $db->table('users')->create([
+        'name' => 'Alice',
+        'email' => 'alice@example.com',
+        'created_at' => date('Y-m-d H:i:s')
+    ]);
 
-// 3. Custom Timeout and Retry
-$response = AmoSDK::get('https://api.example.com/large-data')
-    ->setTimeout(60)        // 60 seconds timeout
-    ->setRetry(5, 2)       // 5 attempts, 2 seconds delay
-    ->pull();
+    // Read records
+    $users = $db->table('users')->read(['status' => 'active'], '*', 'created_at DESC', 5);
 
-// 4. Combining Multiple Features
-$response = AmoSDK::post('https://api.example.com/important-data', $data)
-    ->enableCache(3600)    // 1 hour cache
-    ->enableLogging()
-    ->setTimeout(30)
-    ->setRetry(3, 1)
-    ->pull();
-```
+    // Update record
+    $db->table('users')->update(['status' => 'inactive'], ['id' => $userId]);
 
-### 🔸 DELETE Request
+    // Delete record
+    $db->table('users')->delete(['id' => $userId]);
 
-```php
-$response = AmoSDK::delete('https://api.example.com/user/123')
-    ->pull();
+    // Count active users
+    $count = $db->table('users')->count(['status' => 'active']);
+
+    // Raw query
+    $emails = $db->query("SELECT email FROM users WHERE email LIKE ?", ['%@example.com']);
+
+    // Transactions
+    $db->beginTransaction();
+    try {
+        $db->table('users')->create(['name' => 'Transaction User 1']);
+        $db->table('users')->create(['name' => 'Transaction User 2']);
+        $db->commit();
+    } catch (\Exception $e) {
+        $db->rollback();
+        echo "Transaction failed: " . $e->getMessage();
+    }
+
+} catch (\Exception $e) {
+    echo "Error: " . $e->getMessage();
+}
 ```
 
 ---
 
-## 🧪 Features Explained
+## 📌 Notes
 
-| Feature         | Description                                                                 |
-|----------------|-----------------------------------------------------------------------------|
-| `enableCache()` | Caches responses to `cache/` dir using a hash key and TTL (default 3600s)  |
-| `enableLogging()` | Logs requests/responses/errors to `logs/api_logs.txt`                     |
-| `setTimeout($sec)` | Sets max request duration in seconds                                     |
-| `setRetry($attempts, $delay)` | Retry logic for failed requests                                |
+- All methods use **prepared statements** to prevent SQL injection.
+- Always set the table using `table()` before executing CRUD operations.
+- Make sure your MySQL user has proper privileges for the database and table.
 
 ---
 
+## ✅ Best Practices
 
+- Catch exceptions to handle errors gracefully.
+- Use transactions when inserting/updating multiple related rows.
+- Avoid raw SQL unless necessary for flexibility or performance.
 
-## 📜 License
+---
 
-MIT License. Do whatever you want—just don't forget to star the repo ⭐
+## 📬 Contributing
 
+Pull requests and suggestions are welcome. Open an issue or fork the repo!
+
+---
