@@ -6,7 +6,7 @@
 
 A simple and powerful PHP SDK built on top of PDO for easy interaction with MySQL databases.
 
-> Author: Claude  
+> Author: Amanuel Ayele  
 > Version: 1.0  
 > License: MIT  
 
