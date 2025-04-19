@@ -1,7 +1,7 @@
 <?php
 /**
  * Database SDK using PDO
- * @author Claude
+ * @author Amanuel Ayele
  */
 
 class amoSDK {
